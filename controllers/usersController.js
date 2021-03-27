@@ -1,14 +1,12 @@
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
-const usersController = (User) =>{
+const usersController = (User) => {
   const getUsers = async (req,res)=> {
     try {
       const {query} = req
-
-      console.log(query)
       //uso comando de mongo y con el find sin parametros traigo todo
       const response = await User.find(query)
-
       return res.json(response)
     } catch(error){
       throw error
@@ -18,6 +16,7 @@ const usersController = (User) =>{
   const postUser = async (req,res) => {
     try {
       const {body} = req
+
       const newUserName = () =>{
         if(body.lastName && body.firstName){ 
           //solo tomo el primer nombre o apellido ingresado
@@ -27,15 +26,14 @@ const usersController = (User) =>{
         } else {
           return body.email ? body.email : 'Usuario'
         }
-        }
-      const newpassword = () => {
-        return body.password
       }
+      const newpassword = await  bcrypt.hash(body.password, 10) 
+            
       const userObject = 
       {
         ...body,
         userName: newUserName(),
-        password: newpassword()
+        password: newpassword
         /* firstName: body.firstName, 
         lastName: body.lastName,
         userName: newUserName(),
@@ -46,14 +44,11 @@ const usersController = (User) =>{
       }
       
       const user = new User (userObject)
-
       await user.save()
       return res.status(201).json(user)
     } catch (err) {
-      //console.log('el error es:' + err)
       if (err.name === "ValidationError") {
         let errors = {};
-  
         Object.keys(err.errors).forEach((key) => {
           errors[key] = err.errors[key].message;
         });
@@ -67,19 +62,39 @@ const usersController = (User) =>{
   const postUserLogin = async (req, res) => {
     try{
       const {body} = req
-      const foundUser = await User.findOne ({"userName": body.userName})
-      //console.log('postUserlogin ==> ', foundUser)
-      if (foundUser && foundUser.password == req.body.password) {
-        const token = await jwt.sign({userName: foundUser.userName}, 'MyOldSecret', { expiresIn: 120 })
-        console.log('token', token )
-        return  res.status(201).json({message: 'User Validated OK', token})
+      const {userName , password} = body
+      
+      const foundUser = await User.findOne ({"userName": userName})
+      if (foundUser ) {// && passwordValidation(foundUser, password) ) {
+        const isPasswordCorrect = await  bcrypt.compareSync( password , foundUser.password)
+        if (isPasswordCorrect) {
+          return  res.status(201).json({message: 'Valid User',  token: createToken (foundUser) })
+        } else {
+          return  res.status(404).json({message: 'Invalid Password'})
+        }
+      } else {
+        return  res.status(404).json({message: 'Invalid User'})
       }
-    }catch (err) {
+    } catch (err) {
       throw  console.log('el error es:' + err)
     }
   }
+/*
+  const passwordValidation = ( user, password) => {
+    const isPasswordCorrect =  bcrypt.compareSync( password , user.password)
+    return isPasswordCorrect
+  }
+*/
+  const createToken = (user) =>{
+    const tokenUser = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userName: user.userName,
+      email: user.email
+    } 
+    return  jwt.sign(tokenUser, 'Indio10072017', { expiresIn: 120 })
+  }
 
-  
   const getUserById = async (req,res)=> {
       try {
       const {params} = req
@@ -116,12 +131,9 @@ const usersController = (User) =>{
   }
 
   const deleteUser = async (req, res) => {
-      try {
+    try {
       const {params} = req
-      console.log(params)
-      const response = await User.findByIdAndDelete(
-          params.userId
-      )
+      const response = await User.findByIdAndDelete( params.userId  )
       return res.status(202).json({message:'El usuario fue eliminado'})
     } catch(error){
       throw error
