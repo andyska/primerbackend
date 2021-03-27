@@ -1,9 +1,11 @@
-// const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 
 const usersController = (User) =>{
   const getUsers = async (req,res)=> {
     try {
       const {query} = req
+
+      console.log(query)
       //uso comando de mongo y con el find sin parametros traigo todo
       const response = await User.find(query)
 
@@ -68,8 +70,9 @@ const usersController = (User) =>{
       const foundUser = await User.findOne ({"userName": body.userName})
       //console.log('postUserlogin ==> ', foundUser)
       if (foundUser && foundUser.password == req.body.password) {
-        // const token = jwt.sign(data: , 'secret' ,  )
-        return  res.status(201).json(foundUser)
+        const token = await jwt.sign({userName: foundUser.userName}, 'MyOldSecret', { expiresIn: 120 })
+        console.log('token', token )
+        return  res.status(201).json({message: 'User Validated OK', token})
       }
     }catch (err) {
       throw  console.log('el error es:' + err)
@@ -84,6 +87,7 @@ const usersController = (User) =>{
 
       return res.json(response)
     } catch(error){
+      console.log(' getUserById el error es:' + error)
       throw error
     }
   }
