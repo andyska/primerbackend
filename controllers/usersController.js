@@ -66,7 +66,7 @@ const usersController = (User) => {
       
       const foundUser = await User.findOne ({"userName": userName})
       if (foundUser ) {// && passwordValidation(foundUser, password) ) {
-        const isPasswordCorrect = await  bcrypt.compareSync( password , foundUser.password)
+        const isPasswordCorrect = await  bcrypt.compare( password , foundUser.password)
         if (isPasswordCorrect) {
           return  res.status(201).json({message: 'Valid User',  token: createToken (foundUser) })
         } else {
@@ -80,8 +80,8 @@ const usersController = (User) => {
     }
   }
 /*
-  const passwordValidation = ( user, password) => {
-    const isPasswordCorrect =  bcrypt.compareSync( password , user.password)
+  const passwordValidation = async ( user, password) => {
+    const isPasswordCorrect = await  bcrypt.compareync( password , user.password)
     return isPasswordCorrect
   }
 */
@@ -92,7 +92,7 @@ const usersController = (User) => {
       userName: user.userName,
       email: user.email
     } 
-    return  jwt.sign(tokenUser, 'Indio10072017', { expiresIn: 120 })
+    return  jwt.sign(tokenUser, 'Indio10072017') //, { expiresIn: 60 })
   }
 
   const getUserById = async (req,res)=> {

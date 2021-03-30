@@ -27,6 +27,7 @@ const booksController = (Book) =>{
   const getBookById = async (req,res)=> {
     try {
       const {params} = req
+      
       const response = await Book.findById(params.bookId)
       
       if ( response && response !== null) {
