@@ -5,14 +5,7 @@ const booksValidations = require('../validations/booksvalidations.js')
 
 //const Joi = require('joi')
 const validation = require('express-joi-validation').createValidator()
-/*
-const bodySchema = Joi.object({
-  title: Joi.string().required().min(2).max(50),
-  author:  Joi.string().required(),
-  genre:  Joi.string().required(),
-  read:   Joi.boolean().required()
 
-})*/
 const routes = (Book)=>{
   const bookRouter = express.Router()
   const controller = booksController(Book)
