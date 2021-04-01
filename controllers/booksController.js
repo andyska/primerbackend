@@ -7,6 +7,7 @@ const booksController = (Book) =>{
 
       return res.json(response)
     } catch(error){
+      console.log('getBooks - error', error)
       throw error
     }
   }
@@ -14,12 +15,12 @@ const booksController = (Book) =>{
   const postBook = async (req,res)=> {
     try {
       //lo que viene en el json  uso para instanciar mi objeto
-      console.log("body", req)
       const book = new Book( req.body )
       
       await book.save()
       return res.status(201).json(book)
     }catch(error) {
+      console.log('postBook - error', error)
       throw error
     }
   }
@@ -36,7 +37,7 @@ const booksController = (Book) =>{
         return res.status(404).json({message:'Book not found'})
       }
     } catch(error){
-      console.log('getBookById - salio con error', error)
+      console.log('getBookById - error', error)
       throw error
     }
   }
@@ -62,7 +63,7 @@ const booksController = (Book) =>{
         return res.status(404).json({message:'Book not found'})
       }
     } catch(error){
-      console.log('putBook - salio con error', error)
+      console.log('putBook - error', error)
       throw error
     }
   }
@@ -78,6 +79,7 @@ const booksController = (Book) =>{
         return res.status(404).json({message:'Book not found'})
       }
     } catch(error){
+      console.log('deleteBook - error', error)
       throw error
     }
   }

@@ -5,8 +5,8 @@ const {Schema} =  mongoose
 
 // creo un objeto a partir de la clase schema
 const bookModel = new Schema ({
-    title: {type: String},
-    author: {type: String},
+    title: {type: String , required: true},
+    author: {type: String, required: true},
     genre: {type: String},
     read: {type: Boolean}
 },

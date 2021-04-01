@@ -2,8 +2,6 @@
 const express = require('express')
 const booksController = require('../controllers/booksController')
 const booksValidations = require('../validations/booksvalidations.js')
-
-//const Joi = require('joi')
 const validation = require('express-joi-validation').createValidator()
 
 const routes = (Book)=>{
