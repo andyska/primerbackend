@@ -17,30 +17,23 @@ const usersController = (User) => {
     try {
       const {body} = req
 
-      const newUserName = () =>{
-        if(body.lastName && body.firstName){ 
+      const newUserName = () => {
+        if (body.lastName && body.firstName &&  body.birthYear ) { 
           //solo tomo el primer nombre o apellido ingresado
           const splitFirstName = body.firstName.split(" ")
           const splitLastName = body.lastName.split(" ")
-          return ( splitLastName[0].toUpperCase() + "-"+ splitFirstName[0])
-        } else {
-          return body.email ? body.email : 'Usuario'
+          const newusername = splitLastName[0].toUpperCase() + "-"+ splitFirstName[0] + "-" + body.birthYear
+          return (newusername)
         }
       }
+
       const newpassword = await  bcrypt.hash(body.password, 10) 
-            
+      
       const userObject = 
       {
         ...body,
-        userName: newUserName(),
+        userName:  newUserName(),
         password: newpassword
-        /* firstName: body.firstName, 
-        lastName: body.lastName,
-        userName: newUserName(),
-        password: body.password,
-        email: body.email,
-        address: body.address,
-        phone: body.phone*/
       }
       
       const user = new User (userObject)
@@ -55,7 +48,7 @@ const usersController = (User) => {
   
         return res.status(400).send(errors);
       }
-      res.status(500).send("Something went wrong");
+      res.status(500).json({message: "Something went wrong" , err});
     }
   }
   
@@ -75,16 +68,12 @@ const usersController = (User) => {
       } else {
         return  res.status(404).json({message: 'Invalid User'})
       }
-    } catch (err) {
-      throw  console.log('el error es:' + err)
+    } catch (error) {
+      console.log('postUserLogin error:' + error)
+      throw  error
     }
   }
-/*
-  const passwordValidation = async ( user, password) => {
-    const isPasswordCorrect = await  bcrypt.compareync( password , user.password)
-    return isPasswordCorrect
-  }
-*/
+
   const createToken = (user) =>{
     const tokenUser = {
       firstName: user.firstName,
@@ -99,10 +88,13 @@ const usersController = (User) => {
       try {
       const {params} = req
       const response = await User.findById(params.userId)
-
-      return res.json(response)
+      if ( response && response !== null) {
+        return res.json(response)
+      } else {
+        return res.status(404).json({message:'User not found'})
+      }
     } catch(error){
-      console.log(' getUserById el error es:' + error)
+      console.log(' getUserById error:' + error)
       throw error
     }
   }
@@ -124,8 +116,14 @@ const usersController = (User) => {
               yearBirthday: body.yearBirthday
           }
       })
-      return res.status(202).json(response)
+      if(response && response !== null) {
+        return res.status(202).json(response)
+      }
+      else{
+        return res.status(404).json({message:'User not found'})
+      }
     } catch(error){
+      console.log('putUser - error', error)
       throw error
     }
   }
@@ -134,8 +132,13 @@ const usersController = (User) => {
     try {
       const {params} = req
       const response = await User.findByIdAndDelete( params.userId  )
-      return res.status(202).json({message:'El usuario fue eliminado'})
+      if ( response && response !== null) {
+        return res.status(202).json({message:'User Deleted'})
+      } else {
+        return res.status(404).json({message:'User not found'})
+      }            
     } catch(error){
+      console.log('deleteUser - error', error)
       throw error
     }
   }

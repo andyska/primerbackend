@@ -11,7 +11,8 @@ const userModel = new Schema ({
     password: {type: String , required: true},
     email: {type: String , required: true},
     address: {type: String},
-    phone: {type: String}
+    phone: {type: String},
+    birthYear : { type: Number , required: true}
 },
 {
   collection: 'users'

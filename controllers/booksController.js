@@ -82,41 +82,7 @@ const booksController = (Book) =>{
     }
   }
 
-  const getBookByTitle = async (req,res)=> {
-    try {
-      const {params} = req
-      const foundBook = await Book.find({"title" : params.bookTitle })
-        //console.log('foundbook', foundBook)
-
-        if (foundBook) {
-          return res.json({message:'Book Found' , foundBook })
-        }else{
-          return res.json({message:'Book NOT Found'})
-        }
-        
-    } catch(error){
-    throw error
-    }
-  }
-
-  
-  const getBooksByAuthor = async (req,res)=> {
-    try {
-      const {params} = req
-      const foundBooks = await Book.find({"author" : params.bookAuthor })
-      //  console.log('foundbook', foundBooks)
-
-        if (foundBooks && foundBooks.length !== 0 ) {
-          return res.json({message:'Books Found' , foundBooks })
-        }else{
-          return res.json({message:'No Book for the Author'})
-        }
-        
-    } catch(error){
-    throw error
-    }
-  }
-    return {getBooks, postBook, getBookById , putBook, deleteBook, getBookByTitle , getBooksByAuthor }
+    return {getBooks, postBook, getBookById , putBook, deleteBook }
   } 
 
 module.exports = booksController

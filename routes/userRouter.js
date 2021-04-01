@@ -36,7 +36,7 @@ const routes = (User)=>{
         
     userRouter.route('/users/login')
       .post(
-        validation.body(usersValidations.loginSchema),
+        //validation.body(usersValidations.loginSchema),
         controller.postUserLogin)
      
   //salida de la funcion de rutas
