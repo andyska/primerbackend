@@ -13,7 +13,7 @@ const routes = (User)=>{
       .get(
         validation.query(usersValidations.querySchema), 
         controller.getUsers
-      ) //este es el endpoint
+      ) 
       .post(
         validation.body(usersValidations.bodySchema), 
         controller.postUser
@@ -36,8 +36,9 @@ const routes = (User)=>{
         
     userRouter.route('/users/login')
       .post(
-        //validation.body(usersValidations.loginSchema),
-        controller.postUserLogin)
+        validation.body(usersValidations.loginSchema),
+        controller.postUserLogin
+      )
      
   //salida de la funcion de rutas
   return userRouter

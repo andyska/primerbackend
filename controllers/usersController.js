@@ -27,12 +27,16 @@ const usersController = (User) => {
         }
       }
 
+      const foundUser = await User.findOne ({"userName": newUserName()})
+      if (foundUser){
+        return  res.status(400).json({message: "Existing UserName - User not inserted"});
+      }
       const newpassword = await  bcrypt.hash(body.password, 10) 
       
       const userObject = 
       {
         ...body,
-        userName:  newUserName(),
+        userName: newUserName(),
         password: newpassword
       }
       
@@ -41,14 +45,14 @@ const usersController = (User) => {
       return res.status(201).json(user)
     } catch (err) {
       if (err.name === "ValidationError") {
-        let errors = {};
+        let errors = {}
         Object.keys(err.errors).forEach((key) => {
-          errors[key] = err.errors[key].message;
-        });
+          errors[key] = err.errors[key].message
+        })
   
-        return res.status(400).send(errors);
+        return res.status(400).send(errors)
       }
-      res.status(500).json({message: "Something went wrong" , err});
+      res.status(500).json({message: "Something went wrong" , err})
     }
   }
   
